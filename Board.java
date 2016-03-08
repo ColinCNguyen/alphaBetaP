@@ -13,6 +13,7 @@ public class Board
 	char [] board;  // the board
 	int moveCount;  // number of pieces placed
 	int boardValue; // the AI evaluation of the board at the current time
+	int bestMove;
 
 	/**
 	 * Start with an empty board and counts at zero ...
@@ -57,7 +58,7 @@ public class Board
 	public boolean makeMove(int pos, char token)
 	{
 		if (pos<0 || pos>8 || board[pos]!=' ') return false;
-	  board[pos]= token;
+		board[pos]= token;
 		moveCount++;
 		boardValue= evaluate(token);
 		return true;
@@ -152,26 +153,33 @@ public class Board
 	 *
 	 * @return the position of the suggested move
 	 */
-	public int suggestMove(char token, int ply, Board b)
+	public int suggestMove(char token, int ply, Board b, int alpha, int beta)
 	{
-		int bestMove= -1;
-		int bestEval= -100;
-		int move;
-		int origValue= boardValue;
-		int [] vals = new int[9];
+		//int origVal = boardValue;
+		
 		if(ply==0 || gameOver()){
 			return evaluate(token);
 		}
-		else{
-			for(int i=moveCount; i<moveCount; i++){
-				vals[i] = suggestMove(token, ply-1, b);
-				if(ply%2==0)
-					return findMin(vals);
-				else
-					return findMax(vals);
-
+		if(ply%2 != 0){
+			int bestSoFar = -1000;
+			for(int i=0; i<(9-moveCount); i++){
+				int val = suggestMove(token, ply-1, b, alpha, beta);
+				if(val > bestSoFar)
+					bestSoFar = val;
+				if(bestSoFar > alpha){
+					alpha = bestSoFar;
+					bestMove = i;
+				}
+				if(alpha > beta)
+					break;
 			}
+			return bestSoFar;
 		}
+		else{
+			
+		}
+		//boardValue= origVal;
+		
 		/*for (move=0; move<9; move++)
 			if (makeMove(move,token))
 			{
@@ -182,10 +190,12 @@ public class Board
 				board[move]= ' '; // umake move
 				moveCount--;
 			}*/
+		return 0;
 		
-		boardValue= origValue; // restore boardValue to previous state
+		//boardValue= origValue; // restore boardValue to previous state
 
 		//return bestMove;
+	}
 
 
 
