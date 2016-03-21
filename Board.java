@@ -14,7 +14,6 @@ public class Board
 	int moveCount;  // number of pieces placed
 	int boardValue; // the AI evaluation of the board at the current time
 	int bestMove;
-
 	/**
 	 * Start with an empty board and counts at zero ...
 	 */
@@ -155,29 +154,45 @@ public class Board
 	 */
 	public int suggestMove(char token, int ply, Board b, int alpha, int beta)
 	{
-		//int origVal = boardValue;
+		int origVal = boardValue;
+		int bestScore;
+		int currentScore = 0;
+		if(ply==0 || gameOver())
+			return evaluate('O');
 		
-		if(ply==0 || gameOver()){
-			return evaluate(token);
-		}
-		if(ply%2 != 0){
-			int bestSoFar = -1000;
-			for(int i=0; i<(9-moveCount); i++){
-				int val = suggestMove(token, ply-1, b, alpha, beta);
-				if(val > bestSoFar)
-					bestSoFar = val;
-				if(bestSoFar > alpha){
-					alpha = bestSoFar;
-					bestMove = i;
+		if(token=='O'){
+			bestScore = -1000;
+			for(int i=0; i<9; i++){
+				if(makeMove(i, token)){
+					currentScore=suggestMove('X', ply-1, b, alpha, beta);
+					moveCount--;
+					board[i]=' ';
+					if(currentScore > bestScore){
+						bestScore = currentScore;
+						bestMove = i;
+					}
 				}
-				if(alpha > beta)
-					break;
 			}
-			return bestSoFar;
+			boardValue = origVal;
+			return bestScore;
 		}
 		else{
-			
+			bestScore = 1000;
+			for(int i=0; i<9; i++){
+				if(makeMove(i, token)){
+					currentScore=suggestMove('O', ply-1, b, alpha, beta);
+					moveCount--;
+					board[i]=' ';
+					if(currentScore < bestScore){
+						bestScore = currentScore;
+						bestMove = i;
+					}
+				}
+			}
+			boardValue = origVal;
+			return bestScore;
 		}
+		
 		//boardValue= origVal;
 		
 		/*for (move=0; move<9; move++)
@@ -190,33 +205,16 @@ public class Board
 				board[move]= ' '; // umake move
 				moveCount--;
 			}*/
-		return 0;
 		
 		//boardValue= origValue; // restore boardValue to previous state
 
 		//return bestMove;
 	}
-
-
-
-	public int findMin(int [] values){
-		int currentMin = 0;
-		for(int i = 0; i<9; i++){
-			if(i == 0)
-				currentMin = values[i];
-			if(values[i] < currentMin)
-				currentMin = values[i];
-		}
-		return currentMin;
+	public char oppositeToken(char token){
+		if(token == 'X')
+			return 'O';
+		else
+			return 'X';
 	}
-	public int findMax(int [] values){
-		int currentMax =  0;
-		for(int i = 0; i<9; i++){
-			if(i==0)
-				currentMax = values[i];
-			if(values[i] > currentMax)
-				currentMax = values[i];
-		}
-		return currentMax;
-	}
+	public int getBestMove(){return bestMove;}
 }

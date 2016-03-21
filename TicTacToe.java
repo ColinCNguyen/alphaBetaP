@@ -31,21 +31,21 @@ public class TicTacToe
 	{
 		int move;
 		b.show();
-
 		if (token=='X')
 		{
-			System.out.print("Enter move (0-9): ");
+			System.out.print("Enter move (0-8): ");
 			move= kb.nextInt();
 			while (!b.makeMove(move,token))
 			{
-				System.out.println("Move must be 0-9 and not on top of an existing piece ...");
-				System.out.print("Enter  a different move (0-9): ");
+				System.out.println("Move must be 0-8 and not on top of an existing piece ...");
+				System.out.print("Enter  a different move (0-8): ");
 				move= kb.nextInt();
 			}
 		}
 		else
 		{
-			b.makeMove(b.suggestMove(token, 4, b, -1000, 1000),token);
+			b.suggestMove(token, 2, b, -1000, 1000);
+			b.makeMove(b.getBestMove(),token);
 		}
 	}
 
