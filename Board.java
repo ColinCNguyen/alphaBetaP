@@ -14,6 +14,7 @@ public class Board
 	int moveCount;  // number of pieces placed
 	int boardValue; // the AI evaluation of the board at the current time
 	int bestMove;
+	int gamePly;
 	/**
 	 * Start with an empty board and counts at zero ...
 	 */
@@ -22,6 +23,7 @@ public class Board
 		int i;
 		moveCount= 0;
 		boardValue= 0;
+		gamePly= 0;
 		board= new char[9];
 		for (i=0; i<9; i++)
 			board[i]= ' ';
@@ -115,9 +117,9 @@ public class Board
 
 		// evaluate the results ...
 		if (good==3) return 100;
-		if (bad==3) return -200;
+		if (bad==3) return -100;
 		if (good > 0 && bad==0) return 1<<good;
-		if (bad > 0 && good==0) return -2<<bad;
+		if (bad > 0 && good==0) return -(1<<bad);
 		return 0;
 	}
 
@@ -154,9 +156,11 @@ public class Board
 	 */
 	public int suggestMove(char token, int ply, Board b, int alpha, int beta)
 	{
-		int origVal = boardValue;
+		//int origVal = boardValue;
 		int bestScore;
 		int currentScore = 0;
+		if (ply > gamePly) gamePly= ply;
+
 		if(ply==0 || gameOver())
 			return evaluate('O');
 		
@@ -169,11 +173,12 @@ public class Board
 					board[i]=' ';
 					if(currentScore > bestScore){
 						bestScore = currentScore;
-						bestMove = i;
+						if (ply==gamePly)
+							bestMove = i;
 					}
 				}
 			}
-			boardValue = origVal;
+			//boardValue = origVal;
 			return bestScore;
 		}
 		else{
@@ -185,11 +190,12 @@ public class Board
 					board[i]=' ';
 					if(currentScore < bestScore){
 						bestScore = currentScore;
-						bestMove = i;
+						if (ply==gamePly)
+							bestMove = i;
 					}
 				}
 			}
-			boardValue = origVal;
+			//boardValue = origVal;
 			return bestScore;
 		}
 		

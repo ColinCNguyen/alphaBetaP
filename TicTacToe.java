@@ -44,7 +44,7 @@ public class TicTacToe
 		}
 		else
 		{
-			b.suggestMove(token, 2, b, -1000, 1000);
+			b.suggestMove(token, 6, b, -1000, 1000);
 			b.makeMove(b.getBestMove(),token);
 		}
 	}
